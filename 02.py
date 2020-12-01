@@ -44,6 +44,12 @@ for trg in list(uriage_data.loc[flg_is_null, "item_name"].unique()):
 # print(uriage_data.head())
 # print (uriage_data.isnull().any(axis=0))
 
-for trg in list(uriage_data["item_name"].sort_values().unique()):
-    print(trg + "의최고가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].max())
-          + "의최저가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].min(skipna=False)))
+# for trg in list(uriage_data["item_name"].sort_values().unique()):
+#     print(trg + "의최고가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].max())
+#           + "의최저가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].min(skipna=False)))
+
+
+# 테크닉 16 : 고객이름의 오류를 수정하자
+kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace("　", "")
+kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace(" ", "")
+print(kokyaku_data["고객이름"].head())
