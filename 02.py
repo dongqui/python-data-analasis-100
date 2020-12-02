@@ -53,3 +53,30 @@ for trg in list(uriage_data.loc[flg_is_null, "item_name"].unique()):
 kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace("　", "")
 kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace(" ", "")
 print(kokyaku_data["고객이름"].head())
+
+# 테크닉 17 : 날짜오류를 수정하자
+
+flg_is_serial = kokyaku_data["등록일"].astype("str").str.isdigit()
+flg_is_serial.sum()
+
+kokyaku_data["등록일"]
+
+
+fromSerial = pd.to_timedelta(kokyaku_data.loc[flg_is_serial, "등록일"].astype("float"), unit="D") + pd.to_datetime("1900/01/01")
+fromSerial
+
+
+fromString = pd.to_datetime(kokyaku_data.loc[~flg_is_serial, "등록일"])
+fromString
+
+kokyaku_data["등록일"] = pd.concat([fromSerial, fromString])
+kokyaku_data
+
+kokyaku_data["등록연월"] = kokyaku_data["등록일"].dt.strftime("%Y%m")
+rslt = kokyaku_data.groupby("등록연월").count()["고객이름"]
+print(rslt)
+print(len(kokyaku_data))
+
+
+flg_is_serial = kokyaku_data["등록일"].astype("str").str.isdigit()
+flg_is_serial.sum()
