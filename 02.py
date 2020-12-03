@@ -78,4 +78,27 @@ flg_is_serial.sum()
 # 테크닉 18 : 고객이름을 키로 두개의 데이터를 결합(조인)하자
 join_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="left")
 join_data = join_data.drop("customer_name", axis=1)
-join_data
+# printjoin_data)
+
+# 테크닉 19 : 정제한 데이터를 덤프하자
+dump_data = join_data[["purchase_date", "purchase_month", "item_name", "item_price", "고객이름", "지역", "등록일"]]
+dump_data.to_csv("dump_data.csv", index=False)
+
+import_data = pd.read_csv("dump_data.csv")
+print(import_data)
+
+byItem = import_data.pivot_table(index="purchase_month", columns="item_name", aggfunc="size", fill_value=0)
+print(byItem)
+
+byPrice = import_data.pivot_table(index="purchase_month", columns="item_name", values="item_price", aggfunc="sum",
+                                  fill_value=0)
+print(byPrice)
+
+byCustomer = import_data.pivot_table(index="purchase_month", columns="고객이름", aggfunc="size", fill_value=0)
+print(byCustomer)
+
+byRegion = import_data.pivot_table(index="purchase_month", columns="지역", aggfunc="size", fill_value=0)
+print(byRegion)
+
+away_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="right")
+print(away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]])
