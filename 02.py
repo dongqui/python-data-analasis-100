@@ -52,31 +52,30 @@ for trg in list(uriage_data.loc[flg_is_null, "item_name"].unique()):
 # 테크닉 16 : 고객이름의 오류를 수정하자
 kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace("　", "")
 kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace(" ", "")
-print(kokyaku_data["고객이름"].head())
+# print(kokyaku_data["고객이름"].head())
 
 # 테크닉 17 : 날짜오류를 수정하자
 
 flg_is_serial = kokyaku_data["등록일"].astype("str").str.isdigit()
 flg_is_serial.sum()
 
-kokyaku_data["등록일"]
-
-
 fromSerial = pd.to_timedelta(kokyaku_data.loc[flg_is_serial, "등록일"].astype("float"), unit="D") + pd.to_datetime("1900/01/01")
-fromSerial
-
+# print(fromSerial)
 
 fromString = pd.to_datetime(kokyaku_data.loc[~flg_is_serial, "등록일"])
-fromString
 
 kokyaku_data["등록일"] = pd.concat([fromSerial, fromString])
-kokyaku_data
+# print(kokyaku_data)
 
 kokyaku_data["등록연월"] = kokyaku_data["등록일"].dt.strftime("%Y%m")
 rslt = kokyaku_data.groupby("등록연월").count()["고객이름"]
-print(rslt)
-print(len(kokyaku_data))
-
+# print(rslt)
+# print(len(kokyaku_data))
 
 flg_is_serial = kokyaku_data["등록일"].astype("str").str.isdigit()
 flg_is_serial.sum()
+
+# 테크닉 18 : 고객이름을 키로 두개의 데이터를 결합(조인)하자
+join_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="left")
+join_data = join_data.drop("customer_name", axis=1)
+join_data
