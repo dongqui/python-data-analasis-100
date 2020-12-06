@@ -84,21 +84,22 @@ join_data = join_data.drop("customer_name", axis=1)
 dump_data = join_data[["purchase_date", "purchase_month", "item_name", "item_price", "고객이름", "지역", "등록일"]]
 dump_data.to_csv("dump_data.csv", index=False)
 
+# 테크닉 20 : 데이터를 집계하자
 import_data = pd.read_csv("dump_data.csv")
-print(import_data)
+# print(import_data)
 
 byItem = import_data.pivot_table(index="purchase_month", columns="item_name", aggfunc="size", fill_value=0)
-print(byItem)
+# print(byItem)
 
 byPrice = import_data.pivot_table(index="purchase_month", columns="item_name", values="item_price", aggfunc="sum",
                                   fill_value=0)
-print(byPrice)
+# print(byPrice)
 
 byCustomer = import_data.pivot_table(index="purchase_month", columns="고객이름", aggfunc="size", fill_value=0)
-print(byCustomer)
+# print(byCustomer)
 
 byRegion = import_data.pivot_table(index="purchase_month", columns="지역", aggfunc="size", fill_value=0)
-print(byRegion)
+# print(byRegion)
 
 away_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="right")
-print(away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]])
+# print(away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]])
