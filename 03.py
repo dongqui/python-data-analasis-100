@@ -62,5 +62,33 @@ uselog_weekday.rename(columns={"log_id": "count"}, inplace=True)
 uselog_weekday = uselog_weekday.groupby("customer_id", as_index=False).max()[["customer_id", "count"]]
 uselog_weekday["routine_flg"] = 0
 uselog_weekday["routine_flg"] = uselog_weekday["routine_flg"].where(uselog_weekday["count"] < 4, 1)
-print(uselog_weekday.head())
+# print(uselog_weekday.head())
+
+# 테크닉27 : 고객 데이터와 이용이력데이터를 결합하자
+customer_join = pd.merge(customer_join, uselog_customer, on="customer_id", how="left")
+customer_join = pd.merge(customer_join, uselog_weekday[["customer_id", "routine_flg"]], on="customer_id", how="left")
+# print(customer_join.head())
+# print(customer_join.isnull().sum())
+
+# 테크닉28 : 회원기간을 계산하자
+from dateutil.relativedelta import relativedelta
+customer_join["calc_date"] = customer_join["end_date"]
+customer_join["calc_date"] = customer_join["calc_date"].fillna(pd.to_datetime("20190430"))
+customer_join["membership_period"] = 0
+for i in range(len(customer_join)):
+    delta = relativedelta(customer_join["calc_date"].iloc[i], customer_join["start_date"].iloc[i])
+    customer_join["membership_period"].iloc[i] = delta.years*12 + delta.months
+# print(customer_join.head())
+
+# 테크닉29 : 고객행동의 각종통계량을 파악하자
+# print(customer_join[["mean", "median", "max", "min"]].describe())
+# print(customer_join.groupby("routine_flg").count()["customer_id"])
+
+import matplotlib.pyplot as plt
+# print(plt.hist(customer_join["membership_period"]))
+
+# 테크닉30 : 탈퇴회원과 지속회원의 차이를 파악하자
+customer_end = customer_join.loc[customer_join["is_deleted"]==1]
+customer_stay = customer_join.loc[customer_join["is_deleted"]==0]
+# customer_join.to_csv("customer_join.csv", index=False)
 
